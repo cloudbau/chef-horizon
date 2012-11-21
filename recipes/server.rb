@@ -61,6 +61,12 @@ package "openstack-dashboard" do
     action :upgrade
 end
 
+# hvolkmer: The lessc package still seems to be needed and not be required
+# by the openstack-dashboard package. Remove when dashboard-package is
+# (really) fixed.
+if platform?("ubuntu")
+  package "lessc"
+end
 
 template node["horizon"]["local_settings_path"] do
   source "local_settings.py.erb"
