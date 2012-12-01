@@ -64,8 +64,11 @@ end
 # hvolkmer: The lessc package still seems to be needed and not be required
 # by the openstack-dashboard package. Remove when dashboard-package is
 # (really) fixed.
-if platform?("ubuntu")
-  package "lessc"
+case node["platform"]
+when "ubuntu"
+    package "lessc" do
+       action :upgrade
+    end
 end
 
 template node["horizon"]["local_settings_path"] do
@@ -89,7 +92,7 @@ end
 execute "openstack-dashboard syncdb" do
   cwd "/usr/share/openstack-dashboard"
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
-  command "python manage.py syncdb"
+  command "python manage.py syncdb --noinput"
   action :run
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
